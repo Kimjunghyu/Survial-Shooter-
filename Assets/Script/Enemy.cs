@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
@@ -20,6 +21,7 @@ public class Enemy : LivingEntity
     private bool isTargeting = false;
     public float speed = 0.2f;
 
+    private GameManager gameManager;
 
     private bool hasTarget
     {
@@ -43,6 +45,7 @@ public class Enemy : LivingEntity
 
     private void Start()
     {
+        gameManager = GetComponent<GameManager>();
         targetEntity = GameObject.FindWithTag("Player").GetComponent<LivingEntity>();
         StartCoroutine(UpdatePath());
         dead = false;
@@ -104,8 +107,8 @@ public class Enemy : LivingEntity
 
         navMesh.isStopped = true;
         navMesh.enabled = false;
-
         animator.SetTrigger("Die");
+        GameManager.instance.AddScore(10);
         // enemyAudioPlayer.PlayOneShot(deathSound);
     }
 
@@ -116,12 +119,6 @@ public class Enemy : LivingEntity
 
     private IEnumerator OnDieEnemy()
     {
-        var cols = gameObject.GetComponentsInChildren<Collider>();
-        foreach (var col in cols)
-        {
-            col.enabled = false;
-        }
-
         rigid.isKinematic = false;
         rigid.useGravity = true;
         yield return new WaitForSeconds(4f);
