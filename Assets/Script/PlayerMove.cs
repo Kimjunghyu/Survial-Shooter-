@@ -36,7 +36,6 @@ public class PlayerMove : LivingEntity
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
         animator.SetFloat("Blend", Math.Abs(moveX) + Math.Abs(moveZ));
-        //bool fire = Input.GetButton(fireButtonName);
         Vector3 pos = new Vector3(moveX, 0f, moveZ);
         pos.Normalize();
         transform.position += pos * speed * Time.deltaTime;

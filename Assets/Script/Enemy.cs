@@ -17,7 +17,6 @@ public class Enemy : LivingEntity
 
     private GameObject playerGo;
     private LivingEntity targetEntity;
-    //public AudioClip hitSound;
     private bool isTargeting = false;
     public float speed = 0.2f;
 
@@ -92,7 +91,6 @@ public class Enemy : LivingEntity
         hitEffect.transform.position = hitPoint;
         hitEffect.transform.rotation = Quaternion.LookRotation(hitNormal);
         hitEffect.Play();
-        //enemyAudioPlayer.PlayOneShot(hitSound);
         base.OnDamage(damage, hitPoint, hitNormal);
     }
 
@@ -109,7 +107,6 @@ public class Enemy : LivingEntity
         navMesh.enabled = false;
         animator.SetTrigger("Die");
         GameManager.instance.AddScore(10);
-        // enemyAudioPlayer.PlayOneShot(deathSound);
     }
 
     public void StartSinking()

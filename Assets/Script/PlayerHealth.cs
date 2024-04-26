@@ -13,17 +13,10 @@ public class PlayerHealth : LivingEntity
             return;
 
         base.OnDamage(damage, hitPoint, hitDirection);
-        //healthSlider.value = health / startingHealth;
-
-       // playerAudioPlayer.PlayOneShot(hitClip);
     }
     public override void Die()
     {
         base.Die();
-
-        //healthSlider.gameObject.SetActive(false);
-        //playerAudioPlayer.PlayOneShot(deathClip);
-
         playerAnimator.SetTrigger("Die");
 
         playerMovement.enabled = false;

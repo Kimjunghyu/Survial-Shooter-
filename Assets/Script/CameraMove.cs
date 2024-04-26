@@ -10,7 +10,6 @@ public class CameraMove : MonoBehaviour
     private float offsetY = 5f;
     private float offsetZ = -5f;
 
-    // Update is called once per frame
     void Update()
     {
         pos = new Vector3(player.transform.position.x + offsetX, player.transform.position.y + offsetY, player.transform.position.z + offsetZ);

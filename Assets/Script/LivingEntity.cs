@@ -9,8 +9,6 @@ public class LivingEntity : MonoBehaviour, Damagable
     public float health { get; protected set; }
     public bool dead { get; protected set; }
     public event Action onDeath;
-
-    // 생명체가 활성화될때 상태를 리셋
     protected virtual void OnEnable()
     {
         dead = false;
