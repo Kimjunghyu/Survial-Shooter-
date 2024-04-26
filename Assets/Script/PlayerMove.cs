@@ -3,20 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMove : MonoBehaviour
+public class PlayerMove : LivingEntity
 {
-   // public string fireButtonName = "Fire1";
-
+    public Gun gun;
     public float speed = 5f;
     private Animator animator;
 
     private void Start()
     {
         animator = GetComponent<Animator>();
-
     }
     private void Update()
     {
+        if(Input.GetButton("Fire1"))
+        {
+            gun.Fire();
+        }
+
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
         float rayDistance;
