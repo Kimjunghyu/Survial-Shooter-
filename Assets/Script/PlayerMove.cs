@@ -5,6 +5,14 @@ using UnityEngine;
 
 public class PlayerMove : LivingEntity
 {
+    private float rotCamXAxisSpeed = 5f;
+    private float rotCamYAxisSpeed = 3f;
+    private float minX = -80;
+    private float maxX = 50;
+
+    private float currX;
+    private float currY;
+
     public Gun gun;
     public float speed = 5f;
     private Animator animator;
@@ -15,30 +23,32 @@ public class PlayerMove : LivingEntity
     }
     private void Update()
     {
-        if(Input.GetButton("Fire1"))
+        if(Time.timeScale > 0)
         {
-            gun.Fire();
+            if (Input.GetButton("Fire1"))
+            {
+                gun.Fire();
+            }
+
+            float mouseX = Input.GetAxis("Mouse X") * rotCamXAxisSpeed;
+            float mouseY = Input.GetAxis("Mouse Y") * rotCamYAxisSpeed;
+            CalculateRotation(mouseX, mouseY);
+
+            float moveX = Input.GetAxis("Horizontal");
+            float moveZ = Input.GetAxis("Vertical");
+            Vector3 moveDirection = transform.forward * moveZ + transform.right * moveX;
+            moveDirection.Normalize();
+            animator.SetFloat("Blend", Mathf.Abs(moveX) + Mathf.Abs(moveZ));
+            transform.position += moveDirection * speed * Time.deltaTime;
+
         }
+    }
 
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
-        float rayDistance;
-
-        if (groundPlane.Raycast(ray, out rayDistance))
-        {
-            Vector3 point = ray.GetPoint(rayDistance);
-            Vector3 direction = point - transform.position;
-            direction.y = 0;
-            Quaternion lookRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10f);
-        }
-
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
-        animator.SetFloat("Blend", Math.Abs(moveX) + Math.Abs(moveZ));
-        Vector3 pos = new Vector3(moveX, 0f, moveZ);
-        pos.Normalize();
-        transform.position += pos * speed * Time.deltaTime;
-
+    public void CalculateRotation(float mouseX, float mouseY)
+    {
+        currY += mouseX;
+        currX -= mouseY;
+        currX = Mathf.Clamp(currX, minX, maxX);
+        transform.rotation = Quaternion.Euler(currX, currY, 0);
     }
 }

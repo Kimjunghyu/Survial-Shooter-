@@ -19,7 +19,6 @@ public class PlayerHealth : LivingEntity
 
     private void Awake()
     {
-       // healthSlider = GetComponent<Slider>();
        rb = GetComponent<Rigidbody>();
         playerMovement = GetComponent<PlayerMove>();
         playerAudioSource = GetComponent<AudioSource>();
@@ -40,14 +39,11 @@ public class PlayerHealth : LivingEntity
     {
         if (dead)
             return;
-        Debug.Log(health);
         playerAudioSource.PlayOneShot(hitClip);
         base.OnDamage(damage, hitPoint, hitDirection);
         healthSlider.value = health;
-        Debug.Log(healthSlider.value);
     }   
 
-    // »ç¸Á Ã³¸®
     public override void Die()
     {
         base.Die();

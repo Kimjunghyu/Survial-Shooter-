@@ -21,7 +21,6 @@ public class Enemy : LivingEntity
 
     private GameObject playerGo;
     private LivingEntity targetEntity;
-    private bool isTargeting = false;
     public float speed = 0.2f;
     public float damage = 20f;
     public float lastAttackTime;
@@ -165,7 +164,6 @@ public class Enemy : LivingEntity
             {
                 var pos = transform.position;
                 pos.y += 1f;
-                Debug.Log(damage);
                 var hitPoint = other.ClosestPoint(pos);
                 var hitNormal = transform.position - other.transform.position;
                 entity.OnDamage(damage, hitPoint, hitNormal.normalized);

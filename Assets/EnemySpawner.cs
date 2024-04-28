@@ -41,7 +41,6 @@ public class EnemySpawner : MonoBehaviour
         {
             int index = (int)UnityEngine.Random.Range(0, 3);
             var selectedEnemy = enemy[index];
-            Debug.Log(enemy[index]);
 
             Vector3 Pos = SetPosition();
             Enemy go = Instantiate(selectedEnemy, Pos, selectedEnemy.transform.rotation);

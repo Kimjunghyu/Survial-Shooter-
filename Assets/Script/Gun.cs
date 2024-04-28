@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 
-// 총을 구현한다
 public class Gun : MonoBehaviour
 {
     public Transform fireTransform;
@@ -13,8 +12,6 @@ public class Gun : MonoBehaviour
     public AudioClip fireClip;
     private float fireDistance = 70f;
     private float lastFireTime;
-    private float timer = 0;
-
     private void Awake()
     {
         bulletLineRenderer = GetComponent<LineRenderer>();
@@ -42,26 +39,26 @@ public class Gun : MonoBehaviour
     {
         if(Time.timeScale > 0)
         {
-            var hitPoint = Vector3.zero;
-            var ray = new Ray(fireTransform.position, fireTransform.forward);
-            if (Physics.Raycast(ray, out RaycastHit hitInfo, fireDistance))
+        var hitPoint = Vector3.zero;
+        var ray = new Ray(fireTransform.position, fireTransform.forward);
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, fireDistance))
+        {
+            hitPoint = hitInfo.point;
+            var damagable = hitInfo.collider.GetComponent<Damagable>();
+            if (damagable != null)
             {
-                hitPoint = hitInfo.point;
-                var damagable = hitInfo.collider.GetComponent<Damagable>();
-                if (damagable != null)
-                {
-                    damagable.OnDamage(20, hitPoint, hitInfo.normal);
-                }
+                damagable.OnDamage(20, hitPoint, hitInfo.normal);
             }
-            else
-            {
-                hitPoint = fireTransform.position + fireTransform.forward * fireDistance;
-            }
-
-            StartCoroutine(ShotEffect(hitPoint));
+        }
+        else
+        {
+            hitPoint = fireTransform.position + fireTransform.forward * fireDistance;
+        }
+        StartCoroutine(ShotEffect(hitPoint));
         }
         
     }
+
     private IEnumerator ShotEffect(Vector3 hitPosition)
     {
         bulletLineRenderer.SetPosition(0, fireTransform.position);

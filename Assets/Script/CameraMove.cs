@@ -5,14 +5,10 @@ using UnityEngine;
 public class CameraMove : MonoBehaviour
 {
     public GameObject player;
-    private Vector3 pos;
-    private float offsetX = -1f;
-    private float offsetY = 5f;
-    private float offsetZ = -5f;
-
+    private Vector3 offset = new Vector3(0f, 0.6f, 0.3f);
     void Update()
     {
-        pos = new Vector3(player.transform.position.x + offsetX, player.transform.position.y + offsetY, player.transform.position.z + offsetZ);
-        transform.position = pos;
+        transform.position = player.transform.position + offset;
+        transform.rotation = Quaternion.LookRotation(player.transform.forward);
     }
 }

@@ -39,14 +39,7 @@ public class PauseGame : MonoBehaviour
 
     public void Quit()
     {
-        if(UnityEditor.EditorApplication.isPlaying)
-        {
-            UnityEditor.EditorApplication.isPlaying = false;
-        }
-        else
-        {
-            Application.Quit();
-        }
+        Application.Quit();
     }
 
     public void Resume()
