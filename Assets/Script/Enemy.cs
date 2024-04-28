@@ -15,10 +15,16 @@ public class Enemy : LivingEntity
     public ParticleSystem hitEffect;
     private Rigidbody rigid;
 
+    public AudioClip deadSound;
+    public AudioClip hitSound;
+    private AudioSource audioPlayer;
+
     private GameObject playerGo;
     private LivingEntity targetEntity;
     private bool isTargeting = false;
     public float speed = 0.2f;
+    public float damage = 20f;
+    public float lastAttackTime;
 
     private GameManager gameManager;
 
@@ -40,6 +46,7 @@ public class Enemy : LivingEntity
         navMesh = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody>();
+        audioPlayer = GetComponent<AudioSource>();
     }
 
     private void Start()
@@ -64,7 +71,7 @@ public class Enemy : LivingEntity
     {
         while (!dead)
         {
-            if (hasTarget)
+            if (hasTarget && isActiveAndEnabled)
             {
                 navMesh.isStopped = false;
                 navMesh.SetDestination(player.position);
@@ -72,6 +79,7 @@ public class Enemy : LivingEntity
             else
             {
                 navMesh.isStopped = true;
+
                 var cols = Physics.OverlapSphere(transform.position, 10f, whatIsTarget);
                 foreach (var col in cols)
                 {
@@ -86,8 +94,15 @@ public class Enemy : LivingEntity
             yield return new WaitForSeconds(0.25f);
         }
     }
+    public void Setup(float newHealth, float newDamage, float newSpeed)
+    {
+        startingHealth = newHealth;
+        damage = newDamage;
+        speed = newSpeed;
+    }
     public override void OnDamage(float damage, Vector3 hitPoint, Vector3 hitNormal)
     {
+        audioPlayer.PlayOneShot(hitSound);
         hitEffect.transform.position = hitPoint;
         hitEffect.transform.rotation = Quaternion.LookRotation(hitNormal);
         hitEffect.Play();
@@ -97,6 +112,7 @@ public class Enemy : LivingEntity
     public override void Die()
     {
         base.Die();
+        audioPlayer.PlayOneShot(deadSound);
         var cols = GetComponentsInChildren<Collider>();
         foreach (var col in cols)
         {
@@ -105,8 +121,27 @@ public class Enemy : LivingEntity
 
         navMesh.isStopped = true;
         navMesh.enabled = false;
+        rigid.isKinematic = true;
+        rigid.useGravity = true;
         animator.SetTrigger("Die");
+        StopCoroutine(UpdatePath());
         GameManager.instance.AddScore(10);
+    }
+
+    public void Respawn()
+    {
+        gameObject.SetActive(true);
+        var cols = GetComponentsInChildren<Collider>();
+        foreach (var col in cols)
+        {
+            col.enabled = true;
+        }
+        rigid.isKinematic = false;
+        rigid.useGravity = false;
+        navMesh.enabled = true;
+        navMesh.isStopped = false;
+
+        StartCoroutine(UpdatePath());
     }
 
     public void StartSinking()
@@ -120,5 +155,23 @@ public class Enemy : LivingEntity
         rigid.useGravity = true;
         yield return new WaitForSeconds(4f);
         gameObject.SetActive(false);
+    }
+    private void OnTriggerStay(Collider other)
+    {
+        if (!dead && Time.time > lastAttackTime + 0.5f)
+        {
+            var entity = other.GetComponent<LivingEntity>();
+            if (entity != null && entity == targetEntity)
+            {
+                var pos = transform.position;
+                pos.y += 1f;
+                Debug.Log(damage);
+                var hitPoint = other.ClosestPoint(pos);
+                var hitNormal = transform.position - other.transform.position;
+                entity.OnDamage(damage, hitPoint, hitNormal.normalized);
+
+                lastAttackTime = Time.time;
+            }
+        }
     }
 }

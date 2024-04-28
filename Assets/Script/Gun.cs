@@ -10,7 +10,7 @@ public class Gun : MonoBehaviour
     private LineRenderer bulletLineRenderer;
 
     private AudioSource gunAudioPlayer;
-
+    public AudioClip fireClip;
     private float fireDistance = 70f;
     private float lastFireTime;
     private float timer = 0;
@@ -33,29 +33,34 @@ public class Gun : MonoBehaviour
         if (Time.time > lastFireTime + 0.1f)
         {
             lastFireTime = Time.time;
+            gunAudioPlayer.PlayOneShot(fireClip);
             Shot();
         }
     }
 
     private void Shot()
     {
-        var hitPoint = Vector3.zero;
-        var ray = new Ray(fireTransform.position, fireTransform.forward);
-        if (Physics.Raycast(ray, out RaycastHit hitInfo, fireDistance))
+        if(Time.timeScale > 0)
         {
-            hitPoint = hitInfo.point;
-            var damagable = hitInfo.collider.GetComponent<Damagable>();
-            if (damagable != null)
+            var hitPoint = Vector3.zero;
+            var ray = new Ray(fireTransform.position, fireTransform.forward);
+            if (Physics.Raycast(ray, out RaycastHit hitInfo, fireDistance))
             {
-                damagable.OnDamage(20, hitPoint, hitInfo.normal);
+                hitPoint = hitInfo.point;
+                var damagable = hitInfo.collider.GetComponent<Damagable>();
+                if (damagable != null)
+                {
+                    damagable.OnDamage(20, hitPoint, hitInfo.normal);
+                }
             }
-        }
-        else
-        {
-            hitPoint = fireTransform.position + fireTransform.forward * fireDistance;
-        }
+            else
+            {
+                hitPoint = fireTransform.position + fireTransform.forward * fireDistance;
+            }
 
-        StartCoroutine(ShotEffect(hitPoint));
+            StartCoroutine(ShotEffect(hitPoint));
+        }
+        
     }
     private IEnumerator ShotEffect(Vector3 hitPosition)
     {
